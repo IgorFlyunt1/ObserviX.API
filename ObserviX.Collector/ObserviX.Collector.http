@@ -1,0 +1,6 @@
+@ObserviX.Collector_HostAddress = http://localhost:5178
+
+GET {{ObserviX.Collector_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
