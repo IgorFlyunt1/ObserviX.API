@@ -13,5 +13,7 @@ builder.AddProject<Projects.ObserviX_API_Web>("webfrontend")
 
 builder.AddProject<Projects.ObserviX_Gateway>("observix-gateway");
 
+builder.AddProject<Projects.ObserviX_Collector>("observix-collector");
+
 await builder.Build().RunAsync();
 
