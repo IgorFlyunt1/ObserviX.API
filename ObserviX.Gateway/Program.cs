@@ -1,12 +1,7 @@
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddAzureAppConfiguration(options =>
 {
-    options.Connect(builder.Configuration["AzureAppConfiguration:ConnectionString"])
-        .ConfigureRefresh(refreshOptions =>
-        {
-            refreshOptions.Register("TestValue", refreshAll: true) // Refresh all settings if 'TestValue' changes
-                .SetRefreshInterval(TimeSpan.FromSeconds(5));
-        });
+    options.Connect(builder.Configuration["AzureAppConfiguration:ConnectionString"]);
 });
 
 

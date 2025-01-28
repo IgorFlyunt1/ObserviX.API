@@ -1,7 +1,7 @@
 trigger:
   branches:
     include:
-      - develop
+      - master
 
 pool:
   vmImage: ubuntu-latest
@@ -39,26 +39,26 @@ steps:
   - task: AzureCLI@2
     displayName: "Provision Infrastructure"
     inputs:
-      azureSubscription: rg-dev-observix-connection-managed-identity
+      azureSubscription: rg-prod-observix-connection-managed-identity
       scriptType: bash
       scriptLocation: inlineScript
       inlineScript: |
-        azd provision --environment dev-observix --no-prompt
+        azd provision --environment prod-observix --no-prompt
     env:
       AZURE_SUBSCRIPTION_ID: 8037b670-1744-44ab-b27d-b8f7f4997a25
-      AZURE_ENV_NAME: dev-observix
+      AZURE_ENV_NAME: prod-observix
       AZURE_LOCATION: eastus
 
   # Step 5: Deploy Application
   - task: AzureCLI@2
     displayName: "Deploy Application"
     inputs:
-      azureSubscription: rg-dev-observix-connection-managed-identity
+      azureSubscription: rg-prod-observix-connection-managed-identity
       scriptType: bash
       scriptLocation: inlineScript
       inlineScript: |
-        azd deploy --environment dev-observix --no-prompt
+        azd deploy --environment prod-observix --no-prompt
     env:
       AZURE_SUBSCRIPTION_ID: 8037b670-1744-44ab-b27d-b8f7f4997a25
-      AZURE_ENV_NAME: dev-observix
+      AZURE_ENV_NAME: prod-observix
       AZURE_LOCATION: eastus
