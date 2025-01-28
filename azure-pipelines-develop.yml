@@ -1,0 +1,45 @@
+﻿trigger:
+  branches:
+    include:
+      - develop
+
+pool:
+  vmImage: ubuntu-latest
+
+# Use the Azure Dev CLI container which has azd & build tools pre-installed
+container: mcr.microsoft.com/azure-dev-cli-apps:latest
+
+steps:
+  # Step 1: Configure AZD to Use Azure CLI Authentication
+  - pwsh: |
+      azd config set auth.useAzCliAuth "true"
+    displayName: "Configure AZD to Use AZ CLI Authentication"
+
+  # Step 2: Log in to Azure using Azure CLI (built into AzureCLI@2 task)
+  - task: AzureCLI@2
+    displayName: "Provision Infrastructure"
+    inputs:
+      azureSubscription: connection-rg-dev-observix   # name of the service connection in AzDO
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: |
+        # Use the pipeline variable for environment
+        azd provision --environment $AZURE_ENV_NAME --no-prompt
+    env:
+      AZURE_SUBSCRIPTION_ID: 8037b670-1744-44ab-b27d-b8f7f4997a25
+      AZURE_ENV_NAME: dev-observix
+      AZURE_LOCATION: eastus
+
+  - task: AzureCLI@2
+    displayName: "Deploy Application"
+    inputs:
+      azureSubscription: connection-rg-dev-observix
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: |
+        # Use the pipeline variable for environment
+        azd deploy --environment $AZURE_ENV_NAME --no-prompt
+    env:
+      AZURE_SUBSCRIPTION_ID: 8037b670-1744-44ab-b27d-b8f7f4997a25
+      AZURE_ENV_NAME: dev-observix
+      AZURE_LOCATION: eastus
