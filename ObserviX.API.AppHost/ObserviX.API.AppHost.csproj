@@ -12,8 +12,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ObserviX.API.ApiService\ObserviX.API.ApiService.csproj" />
-    <ProjectReference Include="..\ObserviX.API.Web\ObserviX.API.Web.csproj" />
     <ProjectReference Include="..\ObserviX.Collector\ObserviX.Collector.csproj" />
     <ProjectReference Include="..\ObserviX.Gateway\ObserviX.Gateway.csproj" />
   </ItemGroup>
