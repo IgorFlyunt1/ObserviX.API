@@ -9,7 +9,6 @@ builder.Configuration.AddAzureAppConfiguration(options =>
 
 
 builder.AddServiceDefaults();
-builder.Services.AddOpenApi();
 builder.Services.AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 

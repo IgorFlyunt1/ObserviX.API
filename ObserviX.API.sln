@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F7B6E9C0-344
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObserviX.Collector", "ObserviX.Collector\ObserviX.Collector.csproj", "{9E837C9B-C623-4752-A117-4FE601FF68E6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObserviX.Shared", "ObserviX.Shared\ObserviX.Shared.csproj", "{C90CFCCE-F375-4024-A175-238A9C282CEB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,6 +38,10 @@ Global
 		{9E837C9B-C623-4752-A117-4FE601FF68E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9E837C9B-C623-4752-A117-4FE601FF68E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9E837C9B-C623-4752-A117-4FE601FF68E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C90CFCCE-F375-4024-A175-238A9C282CEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C90CFCCE-F375-4024-A175-238A9C282CEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C90CFCCE-F375-4024-A175-238A9C282CEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C90CFCCE-F375-4024-A175-238A9C282CEB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -45,5 +51,6 @@ Global
 		{17414B69-C06D-4BE3-9380-AD61A9C008BE} = {47AB3A88-1BD3-4625-81AC-0312A202BE40}
 		{6FDDB739-0F3E-4768-935A-0FF4DF0E9418} = {F7B6E9C0-3443-46F8-B6A7-69C881E712F0}
 		{9E837C9B-C623-4752-A117-4FE601FF68E6} = {F7B6E9C0-3443-46F8-B6A7-69C881E712F0}
+		{C90CFCCE-F375-4024-A175-238A9C282CEB} = {F7B6E9C0-3443-46F8-B6A7-69C881E712F0}
 	EndGlobalSection
 EndGlobal
