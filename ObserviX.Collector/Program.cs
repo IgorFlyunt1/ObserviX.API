@@ -7,15 +7,13 @@ builder.AddRedisOutputCacheWithPolicies();
 
 builder.Services.AddOpenApi();
 
-
 var app = builder.Build();
 app.MapDefaultEndpoints();
 app.MapOpenApi();
 app.UseHttpsRedirection();
 app.UseOutputCache();
 
-
-app.MapGet("/test", () => 
+app.MapGet("/collector-test", () => 
     {
         Console.WriteLine("Request processed");
         return "Hello World! collector";
