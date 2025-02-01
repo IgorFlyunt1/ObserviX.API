@@ -1,3 +1,7 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using ObserviX.Gateway.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddAzureAppConfiguration(options =>
 {
@@ -5,10 +9,20 @@ builder.Configuration.AddAzureAppConfiguration(options =>
 });
 
 builder.AddServiceDefaults();
-builder.Services.AddReverseProxy()
-    .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
+var azureAppConfigReverseProxyStr = builder.Configuration.GetValue<string>("AzureAppConfigurationReverseProxyConfig");
+if (string.IsNullOrWhiteSpace(azureAppConfigReverseProxyStr))
+{
+    throw new Exception("Failed to get ReverseProxy configuration from Azure App Configuration Service.");
+}
 
-var proxyValues = builder.Configuration.GetSection("ReverseProxy");
+var azureAppConfigReverseProxy = JsonSerializer.Deserialize<ReverseProxyConfiguration>(azureAppConfigReverseProxyStr);
+if (azureAppConfigReverseProxy == null)
+{
+    throw new Exception("Failed to parse ReverseProxy configuration.");
+}
+
+builder.Services.AddReverseProxy()
+    .LoadFromMemory(azureAppConfigReverseProxy.GetRoutesConfigList(), azureAppConfigReverseProxy.GetClustersConfigList());
 
 var app = builder.Build();
 
@@ -22,7 +36,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.MapReverseProxy();
 
-app.MapGet("/gateway-test", () => $"Hello World! Gateway - TestValue: {proxyValues.Value}")
+app.MapGet("/gateway-test", () => 
+        $"Hello World! \nGateway - AppSettings proxy config: \n{builder.Configuration.GetSection("ReverseProxy").Value} \n Azure App Configuration proxy config: \n{azureAppConfigReverseProxyStr}")
     .WithName("test");
 
 
