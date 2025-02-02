@@ -28,17 +28,23 @@ public class ReverseProxyConfiguration
         return Clusters.Select(cluster => 
             new ClusterConfig
             {
-                ClusterId = cluster.Key, 
-                LoadBalancingPolicy = LoadBalancingPolicies.RoundRobin, 
+                ClusterId = cluster.Key,
+                LoadBalancingPolicy = string.IsNullOrWhiteSpace(cluster.Value.LoadBalancingPolicies) 
+                    ? LoadBalancingPolicies.RoundRobin 
+                    : cluster.Value.LoadBalancingPolicies,
                 Destinations = cluster.Value.Destinations.ToDictionary(
                     dest =>
-                        dest.Key, 
+                        dest.Key,
                     dest =>
                         new DestinationConfig
                         {
                             Address = dest.Value.Address,
+                            Health = dest.Value.Health,
+                            Metadata = dest.Value.Metadata,
+                            Host = dest.Value.Host,
                         }
-                    )
+                ),
+                Metadata = cluster.Value.Metadata
             }).ToList();
     }
 }
@@ -58,9 +64,14 @@ public class ReverseProxyMatch
 public class ReverseProxyCluster
 {
     public Dictionary<string, ReverseProxyDestination> Destinations { get; set; } = new();
+    public string? LoadBalancingPolicies { get; set; }
+    public Dictionary<string, string>? Metadata { get; set; }
 }
 
 public class ReverseProxyDestination
 {
-    public string Address { get; set; } = string.Empty;
+    public string Address { get; set; }
+    public string? Health { get; set; }
+    public string? Host { get; set; }
+    public Dictionary<string, string>? Metadata { get; set; }
 }
