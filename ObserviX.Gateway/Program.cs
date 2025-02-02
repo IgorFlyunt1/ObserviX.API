@@ -1,6 +1,8 @@
 using System.Text.Json;
-using System.Text.Json.Serialization;
+using ObserviX.API.ServiceDefaults;
 using ObserviX.Gateway.Models;
+using ObserviX.Shared.Extensions.Logging;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddAzureAppConfiguration(options =>
@@ -9,6 +11,7 @@ builder.Configuration.AddAzureAppConfiguration(options =>
 });
 
 builder.AddServiceDefaults();
+builder.AddLoggingAndTelemetry(builder.Configuration);
 var azureAppConfigReverseProxyStr = builder.Configuration.GetValue<string>("AzureAppConfigurationReverseProxyConfig");
 if (string.IsNullOrWhiteSpace(azureAppConfigReverseProxyStr))
 {
@@ -27,6 +30,7 @@ builder.Services.AddReverseProxy()
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
+app.UseSerilogRequestLogging();
 
 if (app.Environment.IsDevelopment())
 {

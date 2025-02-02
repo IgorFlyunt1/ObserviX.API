@@ -1,4 +1,4 @@
-﻿namespace ObserviX.Shared.Caching;
+﻿namespace ObserviX.Shared.Extensions.Caching;
 
 public static class CachingConstants
 {

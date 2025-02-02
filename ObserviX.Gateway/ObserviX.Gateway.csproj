@@ -15,6 +15,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\ObserviX.API.ServiceDefaults\ObserviX.API.ServiceDefaults.csproj" />
+      <ProjectReference Include="..\ObserviX.Shared\ObserviX.Shared.csproj" />
     </ItemGroup>
 
 </Project>

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace ObserviX.Shared.Caching;
+namespace ObserviX.Shared.Extensions.Caching;
 
 public static class RedisOutputCacheExtensions
 {
