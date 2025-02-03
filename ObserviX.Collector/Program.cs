@@ -1,22 +1,18 @@
 using ObserviX.API.ServiceDefaults;
+using ObserviX.Shared;
+using ObserviX.Shared.Exceptions;
 using ObserviX.Shared.Extensions.Caching;
+using ObserviX.Shared.Extensions.Configuration;
 using ObserviX.Shared.Extensions.Logging;
+using ObserviX.Shared.Extensions.Scalar;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.AddServiceDefaults();
-builder.AddRedisOutputCacheWithPolicies();
-builder.AddLoggingAndTelemetry(builder.Configuration);
-
-builder.Services.AddOpenApi();
-
+builder.AddSharedServices();
 var app = builder.Build();
+var serviceName = app.Configuration.GetValue<string>("SERVICE_NAME")!;
+app.AddSharedPipeline(serviceName);
 app.MapDefaultEndpoints();
-app.UseSerilogRequestLogging();
-app.MapOpenApi();
-app.UseHttpsRedirection();
-app.UseOutputCache();
 
 app.MapGet("/collector-test", () => 
     {
@@ -24,6 +20,7 @@ app.MapGet("/collector-test", () =>
         return "Hello World! collector";
     })
     .WithName("test")
-    .CacheOutput(CachingConstants.ProductsKey);
+    .CacheOutput(CachingConstants.ProductsKey)
+    .WithOpenApi();
 
 await app.RunAsync();

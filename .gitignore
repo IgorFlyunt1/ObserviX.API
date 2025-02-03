@@ -4,3 +4,8 @@ obj/
 riderModule.iml
 /_ReSharper.Caches/
 .azure
+
+# Ignore local and environment-specific appsettings files
+appsettings.Local.json
+appsettings.Development.json
+appsettings.Production.json

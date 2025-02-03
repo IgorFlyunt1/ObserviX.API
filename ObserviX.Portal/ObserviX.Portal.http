@@ -1,6 +1,0 @@
-@ObserviX.Portal_HostAddress = http://localhost:5114
-
-GET {{ObserviX.Portal_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

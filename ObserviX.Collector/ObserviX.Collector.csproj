@@ -15,4 +15,16 @@
         <ProjectReference Include="..\ObserviX.Shared\ObserviX.Shared.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Update="appsettings.Production.json">
+        <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+      </Content>
+      <Content Update="appsettings.Development.json">
+        <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+      </Content>
+      <Content Update="appsettings.Local.json">
+        <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+      </Content>
+    </ItemGroup>
+
 </Project>
