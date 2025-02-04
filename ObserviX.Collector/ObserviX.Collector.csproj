@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Aspire.Azure.Messaging.ServiceBus" Version="9.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.1"/>
     </ItemGroup>
 
@@ -25,6 +26,11 @@
       <Content Update="appsettings.Local.json">
         <CopyToPublishDirectory>Never</CopyToPublishDirectory>
       </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Features\Visitors\Commands\" />
+      <Folder Include="Features\Visits\" />
     </ItemGroup>
 
 </Project>

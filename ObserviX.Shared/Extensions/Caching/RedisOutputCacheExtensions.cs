@@ -13,13 +13,22 @@ public static class RedisOutputCacheExtensions
         builder.Services.AddOutputCache(options =>
         {
             AddProducts(options);
+            AddVisitors(options);
         });
     }
     
+
     private static void AddProducts(OutputCacheOptions options)
     {
         options.AddPolicy(CachingConstants.ProductsKey, build =>
             build.Expire(TimeSpan.FromDays(7))
                 .Tag(CachingConstants.ProductsKey));
+    }
+    
+    private static void AddVisitors(OutputCacheOptions options)
+    {
+        options.AddPolicy(CachingConstants.VisitorsKey, build =>
+            build.Expire(TimeSpan.FromHours(1))
+                .Tag(CachingConstants.VisitorsKey));
     }
 }
