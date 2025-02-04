@@ -6,6 +6,7 @@ using ObserviX.Shared.Exceptions;
 using ObserviX.Shared.Extensions.Caching;
 using ObserviX.Shared.Extensions.Configuration;
 using ObserviX.Shared.Extensions.Logging;
+using ObserviX.Shared.Extensions.Mediatr;
 using ObserviX.Shared.Extensions.Scalar;
 using Serilog;
 
@@ -20,6 +21,7 @@ namespace ObserviX.Shared;
             builder.AddLoggingAndTelemetry(builder.Configuration);
             builder.Services.AddOpenApi();
             builder.Services.AddHealthChecks();
+            builder.Services.AddMediatrServices();
             
             
             //TODO: scalar for all microservices , global error handling, global response handling
