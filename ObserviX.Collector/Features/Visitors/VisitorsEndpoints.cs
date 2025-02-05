@@ -1,5 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using ObserviX.Collector.Features.Visitors.Queries;
+using ObserviX.Shared.Extensions.Caching;
 
 namespace ObserviX.Collector.Features.Visitors;
 
@@ -15,9 +17,14 @@ public static class VisitorsEndpoints
     public const string GetVisitorVisits = "/api/visitors/{id}/visits";
     public const string GetVisitorVisit = "/api/visitors/{id}/visits/{visitId}";
 
-    public static void MapVisitorsEndpoints(this WebApplication app)
+    public static IEndpointRouteBuilder MapVisitorsEndpoints(this IEndpointRouteBuilder endpoints)
     {
-   
+        endpoints.MapGet("/api/visitors", async ([FromServices] IMediator mediator) =>
+            await mediator.Send(new GetVisitorsQuery()))
+            .WithOpenApi()
+            .AllowAnonymous();
 
+        // Add additional visitor endpoints as needed.
+        return endpoints;
     }
 }

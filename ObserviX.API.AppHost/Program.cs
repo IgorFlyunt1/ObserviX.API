@@ -2,14 +2,14 @@ var builder = DistributedApplication.CreateBuilder(args);
 
 var cache = builder.AddRedis("cache");
 
-// Add Aspire Service Bus component
-var serviceBus = builder.AddAzureServiceBus("servicebus").AddQueue("observix-visitors-queue");
+var serviceBus = builder.ExecutionContext.IsPublishMode
+    ? builder.AddAzureServiceBus("servicebus").AddQueue("observix-queue")
+    : builder.AddConnectionString("servicebus");
 
 var collector = builder.AddProject<Projects.ObserviX_Collector>("observix-collector")
     .WithReference(cache)
     .WithReference(serviceBus)
-    .WaitFor(cache)
-    .WaitFor(serviceBus);
+    .WaitFor(cache);
 
 builder.AddProject<Projects.ObserviX_Gateway>("observix-gateway")
     .WithExternalHttpEndpoints()

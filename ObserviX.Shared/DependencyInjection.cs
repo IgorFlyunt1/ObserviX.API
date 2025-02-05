@@ -8,6 +8,7 @@ using ObserviX.Shared.Extensions.Configuration;
 using ObserviX.Shared.Extensions.Logging;
 using ObserviX.Shared.Extensions.Mediatr;
 using ObserviX.Shared.Extensions.Scalar;
+using ObserviX.Shared.Middlewares;
 using Serilog;
 
 namespace ObserviX.Shared;
@@ -66,6 +67,7 @@ namespace ObserviX.Shared;
             //     app.UseHsts();
             // }
 
+            app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
             app.UseSerilogRequestLogging();
             app.UseHttpsRedirection();
             app.UseRouting();

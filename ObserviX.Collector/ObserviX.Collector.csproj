@@ -30,7 +30,6 @@
 
     <ItemGroup>
       <Folder Include="Features\Visitors\Commands\" />
-      <Folder Include="Features\Visits\" />
     </ItemGroup>
 
 </Project>
