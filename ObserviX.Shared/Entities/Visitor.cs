@@ -6,6 +6,7 @@
         public Guid VisitorId { get; set; }
         
         // Identity Information
+        public required Guid TenantId { get; set; }
         public string? Email { get; set; }
         public string? PhoneNumber { get; set; }
         public string? LeadId { get; set; }
