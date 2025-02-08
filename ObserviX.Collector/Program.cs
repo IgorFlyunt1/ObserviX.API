@@ -1,11 +1,12 @@
 using ObserviX.API.ServiceDefaults;
 using ObserviX.Collector.Features.Visitors;
+using ObserviX.Collector.Features.Visitors.Queries;
 using ObserviX.Shared;
 using ObserviX.Shared.Extensions.ApiResponseWrapper;
 using ObserviX.Shared.Extensions.Caching;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.AddSharedServices();
+builder.AddSharedServices(typeof(Program).Assembly);
 builder.AddAzureServiceBusClient("servicebus");
 var app = builder.Build();
 var serviceName = app.Configuration.GetValue<string>("SERVICE_NAME")!;
@@ -16,8 +17,7 @@ var endpoints = app.MapGroup("")
 endpoints.MapVisitorsEndpoints();
 
 
-
-app.MapGet("/collector-test", () => 
+app.MapGet("/collector-test", () =>
     {
         Console.WriteLine("Request processed");
         return "Hello World! collector";

@@ -12,6 +12,11 @@ builder.AddLoggingAndTelemetry(builder.Configuration);
 builder.Services.AddConfiguredReverseProxy(builder.Configuration, builder.Environment);
 
 var app = builder.Build();
+if (!app.Environment.IsDevelopment() || !app.Environment.IsEnvironment("Local"))
+{
+    app.UseHsts();
+}
+app.UseCors("ConfiguredCors");
 app.UseCustomConfiguration();
 app.MapDefaultEndpoints();
 app.UseSerilogRequestLogging();
