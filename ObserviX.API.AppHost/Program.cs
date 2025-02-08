@@ -7,7 +7,7 @@ var serviceBus = builder.ExecutionContext.IsPublishMode
     : builder.AddConnectionString("servicebus");
 
 var keycloak = builder.AddKeycloak("observix-keycloak", 8080)
-    .WithDataVolume()
+    .WithDataVolume("observix-keycloak-data")
     .WithExternalHttpEndpoints();
 
 var collector = builder.AddProject<Projects.ObserviX_Collector>("observix-collector")
