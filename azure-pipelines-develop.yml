@@ -6,7 +6,17 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
-container: mcr.microsoft.com/azure-dev-cli-apps:latest
+# Use the container image and set container-level environment variables
+container:
+  image: mcr.microsoft.com/azure-dev-cli-apps:latest
+  env:
+    ASPNETCORE_ENVIRONMENT: 'Development'
+
+# Global pipeline variables for environment settings
+variables:
+  ASPNETCORE_ENVIRONMENT: 'Development'
+  AZURE_ENV_NAME: 'dev-observix'
+  AZURE_LOCATION: 'eastus'
 
 steps:
   # Step 1: Install .NET 8.0 Runtime for PowerShell compatibility
@@ -15,7 +25,7 @@ steps:
     inputs:
       packageType: runtime
       version: 8.0.0
-      
+  
   # Step 1.1: Install .NET 9.0 Runtime for PowerShell compatibility
   - task: UseDotNet@2
     displayName: "Install .NET Core 9.0.0 Runtime"
@@ -35,7 +45,7 @@ steps:
       azd config set auth.useAzCliAuth "true"
     displayName: "Configure AZD to Use AZ CLI Authentication"
 
-  # Step 4: Provision Infrastructure
+  # Step 4: Provision Infrastructure using the Development environment
   - task: AzureCLI@2
     displayName: "Provision Infrastructure"
     inputs:
@@ -43,13 +53,14 @@ steps:
       scriptType: bash
       scriptLocation: inlineScript
       inlineScript: |
-        azd provision --environment dev-observix --no-prompt
+        azd provision --environment $(AZURE_ENV_NAME) --no-prompt
     env:
       AZURE_SUBSCRIPTION_ID: 8037b670-1744-44ab-b27d-b8f7f4997a25
-      AZURE_ENV_NAME: dev-observix
-      AZURE_LOCATION: eastus
+      AZURE_ENV_NAME: $(AZURE_ENV_NAME)
+      AZURE_LOCATION: $(AZURE_LOCATION)
+      ASPNETCORE_ENVIRONMENT: $(ASPNETCORE_ENVIRONMENT)
 
-  # Step 5: Deploy Application
+  # Step 5: Deploy Application using the Development environment
   - task: AzureCLI@2
     displayName: "Deploy Application"
     inputs:
@@ -57,8 +68,9 @@ steps:
       scriptType: bash
       scriptLocation: inlineScript
       inlineScript: |
-        azd deploy --environment dev-observix --no-prompt
+        azd deploy --environment $(AZURE_ENV_NAME) --no-prompt
     env:
       AZURE_SUBSCRIPTION_ID: 8037b670-1744-44ab-b27d-b8f7f4997a25
-      AZURE_ENV_NAME: dev-observix
-      AZURE_LOCATION: eastus
+      AZURE_ENV_NAME: $(AZURE_ENV_NAME)
+      AZURE_LOCATION: $(AZURE_LOCATION)
+      ASPNETCORE_ENVIRONMENT: $(ASPNETCORE_ENVIRONMENT)
