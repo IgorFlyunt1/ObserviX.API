@@ -3,7 +3,7 @@ var builder = DistributedApplication.CreateBuilder(args);
 var cache = builder.AddRedis("cache");
 
 var serviceBus = builder.ExecutionContext.IsPublishMode
-    ? builder.AddAzureServiceBus("servicebus").AddQueue("observix-queue")
+    ? builder.AddAzureServiceBus("servicebus").AddQueue("observix-queue").AddQueue("observix-visitors-queue")
     : builder.AddConnectionString("servicebus");
 
 var keycloak = builder.AddKeycloak("observix-keycloak", 8080)

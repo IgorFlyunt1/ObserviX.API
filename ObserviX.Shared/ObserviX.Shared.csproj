@@ -32,7 +32,6 @@
 
     <ItemGroup>
       <Folder Include="Extensions\Mediatr\PipelineBehaviors\" />
-      <Folder Include="Interfaces\" />
     </ItemGroup>
 
 </Project>

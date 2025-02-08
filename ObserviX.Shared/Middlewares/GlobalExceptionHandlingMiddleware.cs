@@ -1,85 +1,105 @@
 ﻿using System.Text.Json;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using FluentValidation;
 using ObserviX.Shared.Entities;
 
-
-namespace ObserviX.Shared.Middlewares;
-
-public class GlobalExceptionHandlingMiddleware
+namespace ObserviX.Shared.Middlewares
 {
-    private readonly RequestDelegate _next;
-    private readonly ILogger<GlobalExceptionHandlingMiddleware> _logger;
-    private readonly IHostEnvironment _env;
-
-    public GlobalExceptionHandlingMiddleware(
-        RequestDelegate next,
-        ILogger<GlobalExceptionHandlingMiddleware> logger,
-        IHostEnvironment env)
+    public class GlobalExceptionHandlingMiddleware
     {
-        _next = next;
-        _logger = logger;
-        _env = env;
-    }
+        private readonly RequestDelegate _next;
+        private readonly ILogger<GlobalExceptionHandlingMiddleware> _logger;
+        private readonly IHostEnvironment _env;
 
-    public async Task InvokeAsync(HttpContext context)
-    {
-        try
+        public GlobalExceptionHandlingMiddleware(
+            RequestDelegate next,
+            ILogger<GlobalExceptionHandlingMiddleware> logger,
+            IHostEnvironment env)
         {
-            await _next(context);
+            _next = next;
+            _logger = logger;
+            _env = env;
         }
-        catch (Exception ex) when (!context.Response.HasStarted)
-        {
-            await HandleException(context, ex);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Exception occurred after response started");
-            throw;
-        }
-    }
 
-    private async Task HandleException(HttpContext context, Exception ex)
-    {
-        (int statusCode, string message) = ex switch
+        public async Task InvokeAsync(HttpContext context)
         {
-            ValidationException validationEx =>
-                (StatusCodes.Status400BadRequest,
+            try
+            {
+                await _next(context);
+            }
+            catch (Exception ex) when (!context.Response.HasStarted)
+            {
+                await HandleExceptionAsync(context, ex);
+            }
+            catch (Exception ex)
+            {
+                // In cases where the response has already started,
+                // log the exception and rethrow.
+                _logger.LogError(ex, "Exception occurred after the response started.");
+                throw;
+            }
+        }
+
+        private async Task HandleExceptionAsync(HttpContext context, Exception ex)
+        {
+            // Retrieve or generate the correlation ID.
+            var correlationId = context.Request.Headers.ContainsKey("X-Correlation-ID")
+                ? context.Request.Headers["X-Correlation-ID"].FirstOrDefault()
+                : Guid.NewGuid().ToString();
+
+            // Retrieve the tenant ID if present.
+            var tenantId = context.Request.Headers.ContainsKey("X-Tenant-Id")
+                ? context.Request.Headers["X-Tenant-Id"].FirstOrDefault()
+                : "unknown";
+
+            var requestContext = new
+            {
+                CorrelationId = correlationId,
+                TenantId = tenantId,
+                Path = context.Request.Path.ToString(),
+                Method = context.Request.Method,
+                QueryString = context.Request.QueryString.ToString()
+            };
+
+            (int statusCode, string message) = ex switch
+            {
+                ValidationException validationEx => (
+                    StatusCodes.Status400BadRequest,
                     $"Validation failed: {string.Join(", ", validationEx.Errors.Select(e => e.ErrorMessage))}"),
+                BadHttpRequestException badRequestEx => (
+                    StatusCodes.Status400BadRequest, badRequestEx.Message),
+                UnauthorizedAccessException => (
+                    StatusCodes.Status401Unauthorized, "Unauthorized access"),
+                KeyNotFoundException => (
+                    StatusCodes.Status404NotFound, "Resource not found"),
+                _ => HandleUnrecognizedError(ex, requestContext)
+            };
 
-            BadHttpRequestException badRequestEx =>
-                (StatusCodes.Status400BadRequest, badRequestEx.Message),
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = statusCode;
 
-            UnauthorizedAccessException =>
-                (StatusCodes.Status401Unauthorized, "Unauthorized access"),
+            context.Response.Headers["X-Correlation-ID"] = correlationId;
+            context.Response.Headers["X-Tenant-Id"] = tenantId;
 
-            KeyNotFoundException =>
-                (StatusCodes.Status404NotFound, "Resource not found"),
+            var response = ApiResponse<object>.ErrorResponse(message);
+            var json = JsonSerializer.Serialize(response, new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                WriteIndented = _env.IsDevelopment() || _env.IsEnvironment("Local")
+            });
 
-            _ => HandleUnrecognizedError(ex)
-        };
+            await context.Response.WriteAsync(json);
+        }
 
-        context.Response.ContentType = "application/json";
-        context.Response.StatusCode = statusCode;
-
-        var response = ApiResponse<object>.ErrorResponse(message);
-        var json = JsonSerializer.Serialize(response, new JsonSerializerOptions
+        private (int statusCode, string message) HandleUnrecognizedError(Exception ex, object requestContext)
         {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            WriteIndented = _env.IsDevelopment() || _env.IsEnvironment("Local")
-        });
+            _logger.LogError(ex, "Unhandled exception occurred. Request details: {@RequestContext}", requestContext);
 
-        await context.Response.WriteAsync(json);
-    }
-
-    private (int statusCode, string message) HandleUnrecognizedError(Exception ex)
-    {
-        _logger.LogError(ex, "Unhandled exception occurred");
-
-        return _env.IsDevelopment() || _env.IsEnvironment("Local")
-            ? (StatusCodes.Status500InternalServerError, ex.ToString())
-            : (StatusCodes.Status500InternalServerError, "An unexpected error occurred");
+            return _env.IsDevelopment() || _env.IsEnvironment("Local")
+                ? (StatusCodes.Status500InternalServerError, ex.ToString())
+                : (StatusCodes.Status500InternalServerError, "An unexpected error occurred");
+        }
     }
 }

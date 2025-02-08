@@ -28,6 +28,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObserviX.Integration", "Obs
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObserviX.Notification", "ObserviX.Notification\ObserviX.Notification.csproj", "{08F1A8C2-8ED7-44F5-B639-EE57A69F92F5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObserviX.Billing", "ObserviX.Billing\ObserviX.Billing.csproj", "{1D3D9DB4-D83B-475D-8D6D-5AE58DF60D4E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -78,6 +80,10 @@ Global
 		{08F1A8C2-8ED7-44F5-B639-EE57A69F92F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{08F1A8C2-8ED7-44F5-B639-EE57A69F92F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{08F1A8C2-8ED7-44F5-B639-EE57A69F92F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D3D9DB4-D83B-475D-8D6D-5AE58DF60D4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D3D9DB4-D83B-475D-8D6D-5AE58DF60D4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D3D9DB4-D83B-475D-8D6D-5AE58DF60D4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D3D9DB4-D83B-475D-8D6D-5AE58DF60D4E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -94,5 +100,6 @@ Global
 		{4AE04E3E-C404-47A2-851E-7195B9328E82} = {F7B6E9C0-3443-46F8-B6A7-69C881E712F0}
 		{FF92F0F2-CD4D-469A-BBF4-7F938998B4CA} = {F7B6E9C0-3443-46F8-B6A7-69C881E712F0}
 		{08F1A8C2-8ED7-44F5-B639-EE57A69F92F5} = {F7B6E9C0-3443-46F8-B6A7-69C881E712F0}
+		{1D3D9DB4-D83B-475D-8D6D-5AE58DF60D4E} = {F7B6E9C0-3443-46F8-B6A7-69C881E712F0}
 	EndGlobalSection
 EndGlobal

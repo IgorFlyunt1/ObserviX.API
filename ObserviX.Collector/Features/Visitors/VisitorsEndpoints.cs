@@ -1,30 +1,32 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using ObserviX.Collector.Features.Visitors.Queries;
-using ObserviX.Shared.Extensions.Caching;
+using ObserviX.Collector.Features.Visitors.Commands;
 
 namespace ObserviX.Collector.Features.Visitors;
 
 public static class VisitorsEndpoints
 {
-    public const string GetVisitors = "/api/visitors";
-    public const string GetVisitor = "/api/visitors/{id}";
-    public const string CreateVisitor = "/api/visitors";
-    public const string UpdateVisitor = "/api/visitors/{id}";
-    public const string PatchVisitor = "/api/visitors/{id}";
-    public const string DeleteVisitor = "/api/visitors/{id}";
-    
-    public const string GetVisitorVisits = "/api/visitors/{id}/visits";
-    public const string GetVisitorVisit = "/api/visitors/{id}/visits/{visitId}";
-
-    public static IEndpointRouteBuilder MapVisitorsEndpoints(this IEndpointRouteBuilder endpoints)
+    public static IEndpointRouteBuilder MapVisitorEndpoints(this IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapGet("/api/visitors", async ([FromServices] IMediator mediator) =>
-            await mediator.Send(new GetVisitorsQuery()))
-            .WithOpenApi()
+        endpoints.MapPost("/api/visitors", async (
+                [FromServices] IMediator mediator,
+                [FromBody] object? visitor,
+                HttpContext context,
+                CancellationToken cancellationToken) =>
+            {
+                var tenantId = (Guid)context.Items["TenantId"]!;
+                if (visitor == null)
+                {
+                    return Results.BadRequest("Visitor data is required.");
+                }
+                
+                await mediator.Send(new CreateVisitorCommand(tenantId, visitor), cancellationToken);
+
+                return Results.Accepted();
+            })
+            .WithOpenApi() 
             .AllowAnonymous();
 
-        // Add additional visitor endpoints as needed.
         return endpoints;
     }
 }

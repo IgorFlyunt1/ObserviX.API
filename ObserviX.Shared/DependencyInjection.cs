@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System.Reflection;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -15,25 +16,16 @@ namespace ObserviX.Shared;
 
  public static class DependencyInjection
     {
-        public static WebApplicationBuilder AddSharedServices(this WebApplicationBuilder builder)
+        public static WebApplicationBuilder AddSharedServices(this WebApplicationBuilder builder, Assembly assembly)
         {
             builder.AddCustomConfiguration();
             builder.AddRedisOutputCacheWithPolicies();
             builder.AddLoggingAndTelemetry(builder.Configuration);
             builder.Services.AddOpenApi();
             builder.Services.AddHealthChecks();
-            builder.Services.AddMediatrServices();
+            builder.Services.AddMediatrServices(assembly);
             
             
-            //TODO: scalar for all microservices , global error handling, global response handling
-
-            // builder.Services.AddApiVersioning(options =>
-            // {
-            //     options.AssumeDefaultVersionWhenUnspecified = true;
-            //     options.DefaultApiVersion = new ApiVersion(1, 0);
-            //     options.ReportApiVersions = true;
-            // });
-            //
             // builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             //     .AddJwtBearer(options =>
             //     {
@@ -61,11 +53,10 @@ namespace ObserviX.Shared;
         // Extension method for WebApplication to configure the middleware pipeline.
         public static WebApplication AddSharedPipeline(this WebApplication app, string serviceName)
         {
-            // if (!app.Environment.IsDevelopment())
-            // {
-            //     app.UseExceptionHandler("/error");
-            //     app.UseHsts();
-            // }
+            if (!app.Environment.IsDevelopment() || !app.Environment.IsEnvironment("Local"))
+            {
+                app.UseHsts();
+            }
 
             app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
             app.UseSerilogRequestLogging();

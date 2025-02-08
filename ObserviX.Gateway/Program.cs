@@ -2,6 +2,7 @@ using ObserviX.API.ServiceDefaults;
 using ObserviX.Gateway.Extensions;
 using ObserviX.Shared.Extensions.Configuration;
 using ObserviX.Shared.Extensions.Logging;
+using ObserviX.Shared.Middlewares;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +24,12 @@ builder.Services.AddAuthentication()
 builder.Services.AddAuthorizationBuilder();
 
 var app = builder.Build();
+if (!app.Environment.IsDevelopment() || !app.Environment.IsEnvironment("Local"))
+{
+    app.UseHsts();
+}
+app.UseCors("ConfiguredCors");
+app.UseMiddleware<TenantExtractionMiddleware>();
 app.UseCustomConfiguration();
 app.MapDefaultEndpoints();
 app.UseSerilogRequestLogging();
