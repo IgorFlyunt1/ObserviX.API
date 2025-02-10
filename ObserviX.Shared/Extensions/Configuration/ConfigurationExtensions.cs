@@ -32,34 +32,34 @@ namespace ObserviX.Shared.Extensions.Configuration
 
             builder.Configuration.AddEnvironmentVariables();
 
-            var appConfigConnectionString = builder.Configuration["azureappconfig"];
-
-            if (appConfigConnectionString == null)
-            {
-                throw new ConfigurationException("Azure App Configuration connection string is missing in configuration.", "azureappconfig");
-            }
-
-            if (!string.IsNullOrWhiteSpace(appConfigConnectionString))
-            {
-                builder.Configuration.AddAzureAppConfiguration(options =>
-                {
-                    options.Connect(appConfigConnectionString)
-                           // First load keys with no label.
-                           .Select(KeyFilter.Any);
-
-                    // If a label was provided, also load keys with that label.
-                    if (!string.IsNullOrWhiteSpace(serviceLabel))
-                    {
-                        options.Select(KeyFilter.Any, serviceLabel);
-                    }
-
-                    options.ConfigureRefresh(refreshOptions =>
-                    {
-                        refreshOptions.Register("RefreshTrigger", refreshAll: true);
-                        refreshOptions.SetRefreshInterval(TimeSpan.FromMinutes(1));
-                    });
-                });
-            }
+            // var appConfigConnectionString = builder.Configuration["azureappconfig"];
+            //
+            // if (appConfigConnectionString == null)
+            // {
+            //     throw new ConfigurationException("Azure App Configuration connection string is missing in configuration.", "azureappconfig");
+            // }
+            //
+            // if (!string.IsNullOrWhiteSpace(appConfigConnectionString))
+            // {
+            //     builder.Configuration.AddAzureAppConfiguration(options =>
+            //     {
+            //         options.Connect(appConfigConnectionString)
+            //                // First load keys with no label.
+            //                .Select(KeyFilter.Any);
+            //
+            //         // If a label was provided, also load keys with that label.
+            //         if (!string.IsNullOrWhiteSpace(serviceLabel))
+            //         {
+            //             options.Select(KeyFilter.Any, serviceLabel);
+            //         }
+            //
+            //         options.ConfigureRefresh(refreshOptions =>
+            //         {
+            //             refreshOptions.Register("RefreshTrigger", refreshAll: true);
+            //             refreshOptions.SetRefreshInterval(TimeSpan.FromMinutes(1));
+            //         });
+            //     });
+            // }
 
             return builder;
         }

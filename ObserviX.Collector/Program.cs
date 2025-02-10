@@ -12,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 var serviceName = builder.Configuration["SERVICE_NAME"]!;
 builder.AddSharedServices(typeof(Program).Assembly, serviceName);
 builder.Services.AddSingleton<ServiceBusClient>(_ =>
-    new ServiceBusClient(builder.Configuration["ServiceBus:ConnectionString"]));
+    new ServiceBusClient("servicebus"));
 builder.Services.AddSingleton<IVisitorProducer, VisitorProducer>();
 
 var AzureAppConfigurationReverseProxyConfig = builder.Configuration.GetConnectionString("azureappconfig");
