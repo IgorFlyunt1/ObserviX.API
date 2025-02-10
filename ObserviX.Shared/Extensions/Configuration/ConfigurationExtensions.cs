@@ -31,7 +31,7 @@ namespace ObserviX.Shared.Extensions.Configuration
 
             builder.Configuration.AddEnvironmentVariables();
 
-            var appConfigConnectionString = builder.Configuration["AppConfigConnectionString"];
+            var appConfigConnectionString = builder.Configuration["AzureAppConfiguration:ConnectionString"];
 
             if (!string.IsNullOrWhiteSpace(appConfigConnectionString))
             {
