@@ -15,6 +15,8 @@ builder.Services.AddSingleton<ServiceBusClient>(_ =>
     new ServiceBusClient(builder.Configuration["ServiceBus:ConnectionString"]));
 builder.Services.AddSingleton<IVisitorProducer, VisitorProducer>();
 
+var AzureAppConfigurationReverseProxyConfig = builder.Configuration.GetConnectionString("azureappconfig");
+
 var app = builder.Build();
 app.UseMiddleware<TenantValidationMiddleware>();
 app.AddSharedPipeline(serviceName);
@@ -28,7 +30,7 @@ endpoints.MapVisitorEndpoints();
 app.MapGet("/collector-test", () => 
     {
         Console.WriteLine("Request processed");
-        return "Hello World! collector";
+        return $"Hello World! collector, {AzureAppConfigurationReverseProxyConfig}";
     })
     .WithName("test")
     .CacheOutput(CachingConstants.ProductsKey)

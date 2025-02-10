@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 using Microsoft.Extensions.Hosting;
+using ObserviX.Shared.Exceptions;
 
 namespace ObserviX.Shared.Extensions.Configuration
 {
@@ -31,7 +32,12 @@ namespace ObserviX.Shared.Extensions.Configuration
 
             builder.Configuration.AddEnvironmentVariables();
 
-            var appConfigConnectionString = builder.Configuration["AzureAppConfiguration:ConnectionString"];
+            var appConfigConnectionString = builder.Configuration["azureappconfig"];
+
+            if (appConfigConnectionString == null)
+            {
+                throw new ConfigurationException("Azure App Configuration connection string is missing in configuration.", "azureappconfig");
+            }
 
             if (!string.IsNullOrWhiteSpace(appConfigConnectionString))
             {
