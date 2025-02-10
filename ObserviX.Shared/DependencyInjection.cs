@@ -53,10 +53,11 @@ namespace ObserviX.Shared;
         // Extension method for WebApplication to configure the middleware pipeline.
         public static WebApplication AddSharedPipeline(this WebApplication app, string serviceName)
         {
-            if (!app.Environment.IsDevelopment() || !app.Environment.IsEnvironment("Local"))
-            {
-                app.UseHsts();
-            }
+            // if (!app.Environment.IsDevelopment() || !app.Environment.IsEnvironment("Local"))
+            // {
+            //     app.UseHsts();
+            // }
+            app.UseHsts();
 
             app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
             app.UseSerilogRequestLogging();
@@ -70,10 +71,13 @@ namespace ObserviX.Shared;
             app.UseOutputCache();
             app.UseHealthChecks("/health");
 
-            if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Local"))
-            {
-                app.MapOpenApi();
-            }
+            // if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Local"))
+            // {
+            //     app.MapOpenApi();
+            // }
+            //
+            app.MapOpenApi();
+
 
             return app;
         }

@@ -22,7 +22,7 @@ public static class LoggingAndTelemetryExtensions
         var levelSwitch = new Serilog.Core.LoggingLevelSwitch
         {
             // Default minimum level can be read from configuration if desired:
-            MinimumLevel = configuration.GetValue("Logging:MinimumLevel", LogEventLevel.Information)
+            MinimumLevel = configuration.GetValue("Logging:MinimumLevel", LogEventLevel.Debug)
         };
 
         builder.Host.UseSerilog((_, loggerConfiguration) =>

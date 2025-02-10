@@ -97,9 +97,11 @@ namespace ObserviX.Shared.Middlewares
         {
             _logger.LogError(ex, "Unhandled exception occurred. Request details: {@RequestContext}", requestContext);
 
-            return _env.IsDevelopment() || _env.IsEnvironment("Local")
-                ? (StatusCodes.Status500InternalServerError, ex.ToString())
-                : (StatusCodes.Status500InternalServerError, "An unexpected error occurred");
+            // return _env.IsDevelopment() || _env.IsEnvironment("Local")
+            //     ? (StatusCodes.Status500InternalServerError, ex.ToString())
+            //     : (StatusCodes.Status500InternalServerError, "An unexpected error occurred");
+            
+            return (StatusCodes.Status500InternalServerError, ex.ToString());
         }
     }
 }
