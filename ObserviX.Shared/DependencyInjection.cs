@@ -16,9 +16,9 @@ namespace ObserviX.Shared;
 
  public static class DependencyInjection
     {
-        public static WebApplicationBuilder AddSharedServices(this WebApplicationBuilder builder, Assembly assembly)
+        public static WebApplicationBuilder AddSharedServices(this WebApplicationBuilder builder, Assembly assembly, string serviceName)
         {
-            builder.AddCustomConfiguration();
+            builder.AddCustomConfiguration(serviceName);
             builder.AddRedisOutputCacheWithPolicies();
             builder.AddLoggingAndTelemetry(builder.Configuration);
             builder.Services.AddOpenApi();

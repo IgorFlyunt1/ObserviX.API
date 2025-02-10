@@ -9,14 +9,14 @@ using ObserviX.Shared.Interfaces;
 using ObserviX.Shared.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.AddSharedServices(typeof(Program).Assembly);
+var serviceName = builder.Configuration["SERVICE_NAME"]!;
+builder.AddSharedServices(typeof(Program).Assembly, serviceName);
 builder.Services.AddSingleton<ServiceBusClient>(_ =>
     new ServiceBusClient(builder.Configuration["ServiceBus:ConnectionString"]));
 builder.Services.AddSingleton<IVisitorProducer, VisitorProducer>();
 
 var app = builder.Build();
 app.UseMiddleware<TenantValidationMiddleware>();
-var serviceName = app.Configuration.GetValue<string>("SERVICE_NAME")!;
 app.AddSharedPipeline(serviceName);
 app.MapDefaultEndpoints();
 var endpoints = app.MapGroup("")

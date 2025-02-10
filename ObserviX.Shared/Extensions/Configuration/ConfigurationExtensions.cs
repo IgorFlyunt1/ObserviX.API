@@ -11,8 +11,12 @@ namespace ObserviX.Shared.Extensions.Configuration
         /// Adds custom configuration sources to the WebApplicationBuilder.
         /// </summary>
         /// <param name="builder">The WebApplicationBuilder instance.</param>
+        /// <param name="serviceLabel">
+        /// The label to use when loading Azure App Configuration key-values.
+        /// If provided, keys with this label will be loaded in addition to keys with no label.
+        /// </param>
         /// <returns>The same WebApplicationBuilder instance for chaining.</returns>
-        public static WebApplicationBuilder AddCustomConfiguration(this WebApplicationBuilder builder)
+        public static WebApplicationBuilder AddCustomConfiguration(this WebApplicationBuilder builder, string serviceLabel)
         {
             var env = builder.Environment;
 
@@ -34,12 +38,20 @@ namespace ObserviX.Shared.Extensions.Configuration
                 builder.Configuration.AddAzureAppConfiguration(options =>
                 {
                     options.Connect(appConfigConnectionString)
-                           .Select(KeyFilter.Any)
-                           .ConfigureRefresh(refreshOptions =>
-                           {
-                               refreshOptions.Register("RefreshTrigger", refreshAll: true);
-                               refreshOptions.SetRefreshInterval(TimeSpan.FromMinutes(1));
-                           });
+                           // First load keys with no label.
+                           .Select(KeyFilter.Any);
+
+                    // If a label was provided, also load keys with that label.
+                    if (!string.IsNullOrWhiteSpace(serviceLabel))
+                    {
+                        options.Select(KeyFilter.Any, serviceLabel);
+                    }
+
+                    options.ConfigureRefresh(refreshOptions =>
+                    {
+                        refreshOptions.Register("RefreshTrigger", refreshAll: true);
+                        refreshOptions.SetRefreshInterval(TimeSpan.FromMinutes(1));
+                    });
                 });
             }
 

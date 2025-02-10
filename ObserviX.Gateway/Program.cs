@@ -6,8 +6,8 @@ using ObserviX.Shared.Middlewares;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.AddCustomConfiguration();
+var serviceName = builder.Configuration["SERVICE_NAME"]!;
+builder.AddCustomConfiguration(serviceName);
 builder.AddServiceDefaults();
 builder.AddLoggingAndTelemetry(builder.Configuration);
 builder.Services.AddConfiguredReverseProxy(builder.Configuration, builder.Environment);
