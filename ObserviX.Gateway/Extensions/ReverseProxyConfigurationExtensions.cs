@@ -16,7 +16,7 @@ namespace ObserviX.Gateway.Extensions
             }
             else
             {
-                var azureAppConfigReverseProxyStr = configuration.GetValue<string>("AzureAppConfigurationReverseProxyConfig");
+                var azureAppConfigReverseProxyStr = configuration.GetValue<string>("ReverseProxy");
                 if (string.IsNullOrWhiteSpace(azureAppConfigReverseProxyStr))
                 {
                     throw new ConfigurationException("AzureAppConfigurationReverseProxyConfig is missing in configuration.", "ReverseProxy");
