@@ -18,34 +18,57 @@ variables:
   AZURE_ENV_NAME: 'dev-observix'
   AZURE_LOCATION: 'eastus'
 
+variables:
+- group: AppSettings_Variable_Group
+- name: buildConfiguration
+  value: 'Release'
+- name: AzureAppConfiguration.ConnectionString
+  value: '$(AzureAppConfiguration.ConnectionString)'
+
 steps:
-  # Step 1: Install .NET 8.0 Runtime for PowerShell compatibility
+  # Step 1: Print out an AzureAppConfiguration.ConnectionString value for testing
+  - task: PowerShell@2
+    inputs:
+      targetType: 'inline'
+      script: |
+        echo "Print AzureAppConfiguration.ConnectionString value"
+        echo "Value: $(AzureAppConfiguration.ConnectionString)"
+
+  # Step 2: Perform appsettings.json value replace
+  - task: FileTransform@2
+    displayName: "Running File Transform Task"
+    inputs:
+      folderPath: '$(System.DefaultWorkingDirectory)/**/*.zip'
+      enableXmlTransform: false
+      jsonTargetFiles: 'appsettings.json'
+
+  # Step 3: Install .NET 8.0 Runtime for PowerShell compatibility
   - task: UseDotNet@2
     displayName: "Install .NET Core 8.0.0 Runtime"
     inputs:
       packageType: runtime
       version: 8.0.0
-  
-  # Step 1.1: Install .NET 9.0 Runtime for PowerShell compatibility
+      
+  # Step 3.1: Install .NET 9.0 Runtime for PowerShell compatibility
   - task: UseDotNet@2
     displayName: "Install .NET Core 9.0.0 Runtime"
     inputs:
       packageType: runtime
       version: 9.0.0
 
-  # Step 2: Install .NET 9.0 SDK for application build
+  # Step 4: Install .NET 9.0 SDK for application build
   - task: UseDotNet@2
     displayName: "Install .NET 9.0 SDK"
     inputs:
       packageType: sdk
       version: 9.0.x
 
-  # Step 3: Configure AZD to Use Azure CLI Authentication
+  # Step 5: Configure AZD to Use Azure CLI Authentication
   - pwsh: |
       azd config set auth.useAzCliAuth "true"
     displayName: "Configure AZD to Use AZ CLI Authentication"
 
-  # Step 4: Provision Infrastructure using the Development environment
+  # Step 6: Provision Infrastructure using the Development environment
   - task: AzureCLI@2
     displayName: "Provision Infrastructure"
     inputs:
@@ -60,7 +83,7 @@ steps:
       AZURE_LOCATION: $(AZURE_LOCATION)
       ASPNETCORE_ENVIRONMENT: $(ASPNETCORE_ENVIRONMENT)
 
-  # Step 5: Deploy Application using the Development environment
+  # Step 7: Deploy Application using the Development environment
   - task: AzureCLI@2
     displayName: "Deploy Application"
     inputs:
