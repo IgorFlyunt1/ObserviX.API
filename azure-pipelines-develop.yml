@@ -25,13 +25,6 @@ variables:
     value: 'Development'
 
 steps:
-  # Print out an AzureAppConfiguration.ConnectionString value for testing
-  - task: PowerShell@2
-    inputs:
-      targetType: 'inline'
-      script: |
-        echo "AzureAppConfiguration_ConnectionString: $(AzureAppConfiguration_ConnectionString)"
-
   # Step 1: Install .NET 8.0 Runtime for PowerShell compatibility
   - task: UseDotNet@2
     displayName: "Install .NET Core 8.0.0 Runtime"
@@ -87,4 +80,15 @@ steps:
       AZURE_ENV_NAME: $(AZURE_ENV_NAME)
       AZURE_LOCATION: $(AZURE_LOCATION)
       ASPNETCORE_ENVIRONMENT: $(ASPNETCORE_ENVIRONMENT)
-      AzureAppConfiguration_ConnectionString: $(AzureAppConfiguration_ConnectionString)
+
+  # Step 6: Update container environment variables
+  - task: AzureCLI@2
+    inputs:
+      azureSubscription: rg-dev-observix-connection-managed-identity
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: |
+        az containerapp update \
+          --name observix-gateway \
+          --resource-group rg-dev-observix \
+          --set-env-vars "AzureAppConfiguration__ConnectionString=$(AzureAppConfiguration_ConnectionString)"
