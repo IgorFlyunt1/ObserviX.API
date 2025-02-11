@@ -32,6 +32,7 @@ steps:
       script: |
         echo "Print AzureAppConfiguration.ConnectionString value"
         echo "Value: $(AzureAppConfiguration.ConnectionString)"
+        echo "ls"
 
   # Step 2: Perform appsettings.json value replace
   - task: FileTransform@2
