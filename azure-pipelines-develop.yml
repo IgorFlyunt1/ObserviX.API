@@ -32,13 +32,14 @@ steps:
       script: |
         echo "Print AzureAppConfiguration.ConnectionString value"
         echo "Value: $(AzureAppConfiguration.ConnectionString)"
+        cd $(System.DefaultWorkingDirectory)
         ls
 
   # Step 2: Perform appsettings.json value replace
   - task: FileTransform@2
     displayName: "Running File Transform Task"
     inputs:
-      folderPath: '$(System.DefaultWorkingDirectory)/**/*.zip'
+      folderPath: '$(System.DefaultWorkingDirectory)/**'
       enableXmlTransform: false
       jsonTargetFiles: 'appsettings.json'
 
