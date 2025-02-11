@@ -38,11 +38,8 @@ app.UseHttpsRedirection();
 // app.UseAuthentication();
 // app.UseAuthorization();
 
-var azureAppConfigConnectionString = builder.Configuration["azureappconfig"];
-var azureAppConfigConnectionFromEnv = builder.Configuration.GetConnectionString("azureappconfig");
-var azureAppConfigConnectionFromConfig = builder.Configuration.GetValue<string>("azureappconfig");
-var azureAppConfigConnectionFromEnvironment = Environment.GetEnvironmentVariable("azureappconfig");
-var azureAppConfigConnectionFromEnvironmentConnection = Environment.GetEnvironmentVariable("ConnectionStrings:azureappconfig");
+
+var azureAppConfigConnectionFromEnvironment = Environment.GetEnvironmentVariable("AzureAppConfiguration__ConnectionString");
 
 var testValue = builder.Configuration.GetValue<string>("testkey");
 var testValueFromEnv = Environment.GetEnvironmentVariable("testkey");
@@ -52,11 +49,7 @@ app.MapGet("/config", () =>
         var result = new
         {
             // Azure App Config connection tested in various ways:
-            azureAppConfigConnectionString = azureAppConfigConnectionString ?? "Not Found",
-            azureAppConfigConnectionFromEnv = azureAppConfigConnectionFromEnv ?? "Not Found",
-            azureAppConfigConnectionFromConfig = azureAppConfigConnectionFromConfig ?? "Not Found",
             azureAppConfigConnectionFromEnvironment = azureAppConfigConnectionFromEnvironment ?? "Not Found",
-            azureAppConfigConnectionFromEnvironmentConnection = azureAppConfigConnectionFromEnvironmentConnection ?? "Not Found",
 
             // Test value retrieved in two ways:
             testValue = testValue ?? "Not Found",
