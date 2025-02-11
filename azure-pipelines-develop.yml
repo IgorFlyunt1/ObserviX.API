@@ -30,16 +30,19 @@ steps:
     inputs:
       targetType: 'inline'
       script: |
-        echo "Print AzureAppConfiguration.ConnectionString value"
-        echo "Value: $(AzureAppConfiguration.ConnectionString)"
+        echo "AzureAppConfiguration_ConnectionString: $(AzureAppConfiguration_ConnectionString)"
 
   # Step 1: Perform appsettings.json value replace
-  - task: FileTransform@2
-    displayName: "Running File Transform Task"
+  - task: AzureCLI@2
     inputs:
-      folderPath: '$(System.DefaultWorkingDirectory)'
-      enableXmlTransform: false
-      jsonTargetFiles: '**/appsettings.json'
+      azureSubscription: 'rg-dev-observix-connection-managed-identity'
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        az containerapp update \
+          --name <YourContainerApp> \
+          --resource-group <YourResourceGroup> \
+          --set-env-vars "AzureAppConfiguration__ConnectionString=$(AzureAppConfiguration_ConnectionString)"
 
   # Step 2: Install .NET 8.0 Runtime for PowerShell compatibility
   - task: UseDotNet@2
@@ -96,3 +99,4 @@ steps:
       AZURE_ENV_NAME: $(AZURE_ENV_NAME)
       AZURE_LOCATION: $(AZURE_LOCATION)
       ASPNETCORE_ENVIRONMENT: $(ASPNETCORE_ENVIRONMENT)
+      AzureAppConfiguration_ConnectionString: $(AzureAppConfiguration_ConnectionString)
