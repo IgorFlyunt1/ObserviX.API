@@ -37,9 +37,9 @@ steps:
   - task: FileTransform@2
     displayName: "Running File Transform Task"
     inputs:
-      folderPath: '**\appsettings*'
+      folderPath: '$(System.DefaultWorkingDirectory)'
       enableXmlTransform: false
-      jsonTargetFiles: 'appsettings.json'
+      jsonTargetFiles: '**/appsettings.json'
 
   # Step 2: Install .NET 8.0 Runtime for PowerShell compatibility
   - task: UseDotNet@2
