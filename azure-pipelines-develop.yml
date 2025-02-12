@@ -92,3 +92,15 @@ steps:
           --name observix-gateway \
           --resource-group rg-dev-observix \
           --set-env-vars "AzureAppConfiguration__ConnectionString=$(AzureAppConfiguration_ConnectionString)"
+        
+  # Step 7: Update container environment variables
+  - task: AzureCLI@2
+    inputs:
+      azureSubscription: rg-dev-observix-connection-managed-identity
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: |
+        az containerapp update \
+          --name observix-collector \
+          --resource-group rg-dev-observix \
+          --set-env-vars "AzureAppConfiguration__ConnectionString=$(AzureAppConfiguration_ConnectionString)"

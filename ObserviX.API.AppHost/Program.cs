@@ -18,8 +18,6 @@ var collector = builder.AddProject<Projects.ObserviX_Collector>("observix-collec
 builder.AddProject<Projects.ObserviX_Gateway>("observix-gateway")
     .WithExternalHttpEndpoints()
     .WithReference(collector)
-    .WithReference(keycloak)
-    .WaitFor(keycloak)
     .WaitFor(collector);
 
 
