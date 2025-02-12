@@ -10,7 +10,7 @@ var serviceName = builder.Configuration["SERVICE_NAME"]!;
 builder.AddCustomConfiguration(serviceName);
 builder.AddServiceDefaults();
 builder.AddLoggingAndTelemetry(builder.Configuration);
-builder.Services.AddConfiguredReverseProxy(builder.Configuration, builder.Environment);
+// builder.Services.AddConfiguredReverseProxy(builder.Configuration, builder.Environment);
 // builder.Services.AddAuthorization();
 // builder.Services.AddAuthentication()
 //     .AddKeycloakJwtBearer(
@@ -29,13 +29,13 @@ if (!app.Environment.IsDevelopment() || !app.Environment.IsEnvironment("Local"))
     app.UseHsts();
 }
 
-app.UseCors("ConfiguredCors");
-app.UseMiddleware<TenantExtractionMiddleware>();
+// app.UseCors("ConfiguredCors");
+// app.UseMiddleware<TenantExtractionMiddleware>();
 app.UseCustomConfiguration();
 app.MapDefaultEndpoints();
 app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
-app.MapReverseProxy();
+// app.MapReverseProxy();
 // app.UseAuthentication();
 // app.UseAuthorization();
 
