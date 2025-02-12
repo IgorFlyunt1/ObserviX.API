@@ -11,17 +11,17 @@ builder.AddCustomConfiguration(serviceName);
 builder.AddServiceDefaults();
 builder.AddLoggingAndTelemetry(builder.Configuration);
 builder.Services.AddConfiguredReverseProxy(builder.Configuration, builder.Environment);
-builder.Services.AddAuthorization();
-builder.Services.AddAuthentication()
-    .AddKeycloakJwtBearer(
-        serviceName: "observix-keycloak",
-        realm: "gateway",
-        options =>
-        {
-            options.Audience = "observix.gateway";
-            options.RequireHttpsMetadata = builder.Environment.IsProduction();
-        });
-builder.Services.AddAuthorizationBuilder();
+// builder.Services.AddAuthorization();
+// builder.Services.AddAuthentication()
+//     .AddKeycloakJwtBearer(
+//         serviceName: "observix-keycloak",
+//         realm: "gateway",
+//         options =>
+//         {
+//             options.Audience = "observix.gateway";
+//             options.RequireHttpsMetadata = builder.Environment.IsProduction();
+//         });
+// builder.Services.AddAuthorizationBuilder();
 
 var app = builder.Build();
 if (!app.Environment.IsDevelopment() || !app.Environment.IsEnvironment("Local"))
@@ -36,8 +36,8 @@ app.MapDefaultEndpoints();
 app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
 app.MapReverseProxy();
-app.UseAuthentication();
-app.UseAuthorization();
+// app.UseAuthentication();
+// app.UseAuthorization();
 
 
 var azureAppConfigConnectionFromEnvironment =
