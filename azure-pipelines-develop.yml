@@ -14,7 +14,7 @@ container:
 
 # Global pipeline variables for environment settings
 variables:
-  - group: AppSettings_Variable_Group
+  - group: Dev_AppSettings_Variable_Group
   - name: AzureAppConfiguration.ConnectionString
     value: '$(AzureAppConfiguration_ConnectionString)'
   - name: AZURE_ENV_NAME

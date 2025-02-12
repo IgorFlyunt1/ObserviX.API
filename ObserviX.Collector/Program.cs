@@ -10,11 +10,13 @@ using ObserviX.Shared.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 var serviceName = builder.Configuration["SERVICE_NAME"]!;
-var connectionString = builder.Configuration["ServiceBus:ConnectionString"];
+var serviceBusConnectionString =
+    Environment.GetEnvironmentVariable("ServiceBus_ConnectionString");
 builder.AddSharedServices(typeof(Program).Assembly, serviceName);
 builder.Services.AddSingleton<ServiceBusClient>(_ =>
-    new ServiceBusClient(builder.Configuration["ServiceBus:ConnectionString"]));
+    new ServiceBusClient(serviceBusConnectionString));
 builder.Services.AddSingleton<IVisitorProducer, VisitorProducer>();
+
 
 
 var app = builder.Build();
@@ -30,7 +32,7 @@ endpoints.MapVisitorEndpoints();
 app.MapGet("/collector-test", () => 
     {
         Console.WriteLine("Request processed");
-        return $"Hello World! collector, {connectionString}";
+        return $"Hello World! collector, {serviceBusConnectionString}";
     })
     .WithName("test")
     .CacheOutput(CachingConstants.ProductsKey)
