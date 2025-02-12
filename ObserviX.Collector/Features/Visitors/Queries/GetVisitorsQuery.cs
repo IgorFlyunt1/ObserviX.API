@@ -4,7 +4,7 @@ using ObserviX.Shared.Entities;
 
 namespace ObserviX.Collector.Features.Visitors.Queries;
 
-public sealed record GetVisitorsQuery() : IRequest<IReadOnlyCollection<VisitorDto>>;
+public sealed record GetVisitorsQuery(Guid TenantId) : IRequest<IReadOnlyCollection<VisitorDto>>;
 
 public sealed class GetVisitorsHandler : IRequestHandler <GetVisitorsQuery, IReadOnlyCollection<VisitorDto>>
 {

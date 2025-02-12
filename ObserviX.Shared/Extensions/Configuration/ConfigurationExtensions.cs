@@ -34,10 +34,6 @@ namespace ObserviX.Shared.Extensions.Configuration
 
             var appConfigConnectionString = Environment.GetEnvironmentVariable("AzureAppConfiguration__ConnectionString");
             
-            if (appConfigConnectionString == null)
-            {
-                throw new ConfigurationException("Azure App Configuration connection string is missing in configuration.", "azureappconfig");
-            }
             
             if (!string.IsNullOrWhiteSpace(appConfigConnectionString))
             {

@@ -19,9 +19,4 @@
       <ProjectReference Include="..\ObserviX.Shared\ObserviX.Shared.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Content Include=".deploy\Dev.ObserviX.Gateway.yml" />
-      <Content Include=".deploy\Prod.ObserviX.Gateway.yml" />
-    </ItemGroup>
-
 </Project>
