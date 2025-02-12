@@ -43,19 +43,28 @@ app.MapReverseProxy();
 var azureAppConfigConnectionFromEnvironment =
     Environment.GetEnvironmentVariable("AzureAppConfiguration__ConnectionString");
 
+
 app.MapGet("/config", () =>
     {
+        var connectionString = Environment.GetEnvironmentVariable("AZURE_APPCONFIGURATION__CONNECTIONSTRING") ?? "Not Found";
+        var endpoint = Environment.GetEnvironmentVariable("AZURE_APPCONFIGURATION_ENDPOINT") ?? "Not Found";
+        var serviceBus = Environment.GetEnvironmentVariable("ServiceBus_ConnectionString") ?? "Not Found";
+        var serviceBusFromConfig = builder.Configuration["ServiceBus_ConnectionString"] ?? "Not Found";
+        var betterStack = builder.Configuration["BetterStack:SourceToken"] ?? "Not Found";
+
         var result = new
         {
-            // Azure App Config connection tested in various ways:
-            azureAppConfigConnectionFromEnvironment = azureAppConfigConnectionFromEnvironment ?? "Not Found",
+            AzureAppConfigurationConnectionString = connectionString,
+            AzureAppConfigurationEndpoint = endpoint,
+            ServiceBusConnectionString = serviceBus,
+            ServiceBusConnectionStringFromConfig = serviceBusFromConfig,
+            BetterStackSourceToken = betterStack,
         };
 
         return Results.Json(result);
     })
     .WithName("config")
     .WithOpenApi();
-
 
 app.MapGet("/gateway-test", () =>
     {
