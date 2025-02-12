@@ -15,7 +15,6 @@ builder.Services.AddSingleton<ServiceBusClient>(_ =>
     new ServiceBusClient("servicebus"));
 builder.Services.AddSingleton<IVisitorProducer, VisitorProducer>();
 
-var AzureAppConfigurationReverseProxyConfig = builder.Configuration.GetConnectionString("azureappconfig");
 
 var app = builder.Build();
 app.UseMiddleware<TenantValidationMiddleware>();
@@ -30,7 +29,7 @@ endpoints.MapVisitorEndpoints();
 app.MapGet("/collector-test", () => 
     {
         Console.WriteLine("Request processed");
-        return $"Hello World! collector, {AzureAppConfigurationReverseProxyConfig}";
+        return $"Hello World! collector,";
     })
     .WithName("test")
     .CacheOutput(CachingConstants.ProductsKey)
