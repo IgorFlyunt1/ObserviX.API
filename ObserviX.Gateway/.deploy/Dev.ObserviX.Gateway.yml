@@ -1,0 +1,81 @@
+trigger:
+  branches:
+    include:
+      - develop
+
+resources:
+  - repo: self
+
+variables:
+  AZURE_APPCONFIGURATION__CONNECTIONSTRING: $(APP_CONFIG_CONNECTION_STRING)
+
+stages:
+  - stage: Build
+    pool:
+      vmImage: 'ubuntu-latest'
+    jobs:
+      - job: Build
+        steps:
+          - task: UseDotNet@2
+            displayName: 'Install .NET 9.0 SDK'
+            inputs:
+              packageType: 'sdk'
+              version: '9.0.x'  # Ensures the latest patch of .NET 9.0 is installed
+
+          - task: DotNetCoreCLI@2
+            displayName: 'Restore NuGet Packages'
+            inputs:
+              command: 'restore'
+              feedsToUse: 'select'
+
+          - task: DotNetCoreCLI@2
+            displayName: 'Build Project'
+            inputs:
+              command: 'build'
+              arguments: '--configuration Release'
+
+  - stage: Publish
+    pool:
+      vmImage: 'ubuntu-latest'
+    jobs:
+      - job: Docker
+        steps:
+          - task: UseDotNet@2
+            displayName: 'Install .NET 9.0 SDK'
+            inputs:
+              packageType: 'sdk'
+              version: '9.0.x'  # Ensures the latest patch of .NET 9.0 is installed
+
+          - script: mkdir -p publish/
+            displayName: 'Create Publish Folder'
+
+          - task: DotNetCoreCLI@2
+            displayName: Publish project
+            inputs:
+              command: 'publish'
+              publishWebProjects: false
+              projects: 'ObserviX.Gateway/ObserviX.Gateway.csproj'
+              arguments: '--configuration Release --output publish/'
+              zipAfterPublish: false
+              modifyOutputPath: false
+
+          # This step logs the connection string to the pipeline.
+          # Note: If the variable is secret, its value will be masked (displayed as '***').
+          - script: |
+              echo "Logging Azure App Configuration Connection String:"
+              echo "$(AZURE_APPCONFIGURATION__CONNECTIONSTRING)"
+            displayName: 'Log Connection String'
+
+          - task: Docker@2
+            displayName: Build and push Docker image
+            inputs:
+              containerRegistry: 'rg-dev-observix-connection-registry'
+              repository: 'observix-api/observix-gateway-dev-observix'
+              command: 'buildAndPush'
+              Dockerfile: 'ObserviX.Gateway/Dockerfile'
+              buildContext: 'ObserviX.Gateway'
+              tags: |
+                $(build.buildNumber)
+                latest
+              buildArguments: |
+                AZURE_APPCONFIGURATION__CONNECTIONSTRING=$(AZURE_APPCONFIGURATION__CONNECTIONSTRING)

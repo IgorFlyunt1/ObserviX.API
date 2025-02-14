@@ -1,4 +1,4 @@
-using ObserviX.API.ServiceDefaults;
+// using ObserviX.API.ServiceDefaults;
 using ObserviX.Gateway.Extensions;
 using ObserviX.Shared.Extensions.Configuration;
 using ObserviX.Shared.Extensions.Logging;
@@ -8,7 +8,7 @@ using Serilog;
 var builder = WebApplication.CreateBuilder(args);
 var serviceName = builder.Configuration["SERVICE_NAME"]!;
 builder.AddCustomConfiguration(serviceName);
-builder.AddServiceDefaults();
+// builder.AddServiceDefaults();
 builder.AddLoggingAndTelemetry(builder.Configuration);
 // builder.Services.AddConfiguredReverseProxy(builder.Configuration, builder.Environment);
 // builder.Services.AddAuthorization();
@@ -32,7 +32,7 @@ if (!app.Environment.IsDevelopment() || !app.Environment.IsEnvironment("Local"))
 // app.UseCors("ConfiguredCors");
 // app.UseMiddleware<TenantExtractionMiddleware>();
 app.UseCustomConfiguration();
-app.MapDefaultEndpoints();
+// app.MapDefaultEndpoints();
 app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
 // app.MapReverseProxy();
