@@ -70,7 +70,7 @@ stages:
             displayName: Build and push Docker image
             inputs:
               containerRegistry: 'rg-dev-observix-connection-registry'
-              repository: 'observix-api/observix-gateway-dev-observix'
+              repository: 'observix-api/observix-gateway'
               command: 'buildAndPush'
               Dockerfile: 'ObserviX.Gateway/Dockerfile'
               buildContext: '.'
