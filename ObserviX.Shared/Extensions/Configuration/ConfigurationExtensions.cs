@@ -1,5 +1,4 @@
-﻿using Azure.Identity;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 using Microsoft.Extensions.Hosting;
@@ -10,7 +9,6 @@ namespace ObserviX.Shared.Extensions.Configuration
     {
         /// <summary>
         /// Adds custom configuration sources to the WebApplicationBuilder.
-        /// Loads local JSON files, environment variables, and Azure App Configuration via Service Connector.
         /// </summary>
         /// <param name="builder">The WebApplicationBuilder instance.</param>
         /// <param name="serviceLabel">
@@ -23,7 +21,6 @@ namespace ObserviX.Shared.Extensions.Configuration
         {
             var env = builder.Environment;
 
-            // Load JSON configuration files.
             builder.Configuration
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
@@ -32,39 +29,37 @@ namespace ObserviX.Shared.Extensions.Configuration
             {
                 builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
             }
-
-            var appConfigEndpoint = "https://app-configuration-dev-observix.azconfig.io";
-
-            if (!string.IsNullOrWhiteSpace(appConfigEndpoint))
+            
+            var appConfigConnectionString =
+                Environment.GetEnvironmentVariable("AZURE_APPCONFIGURATION__CONNECTIONSTRING");
+            
+            if (!string.IsNullOrWhiteSpace(appConfigConnectionString))
             {
                 try
                 {
-                    var credential = new DefaultAzureCredential();
-
                     builder.Configuration.AddAzureAppConfiguration(options =>
                     {
-                        options.Connect(new Uri(appConfigEndpoint), credential)
-                            // Load all keys with no label.
+                        options.Connect(appConfigConnectionString)
+                            // First load keys with no label.
                             .Select(KeyFilter.Any);
 
-                        // If a service label is provided, also load keys with that label.
+                        // If a label was provided, also load keys with that label.
                         if (!string.IsNullOrWhiteSpace(serviceLabel))
                         {
                             options.Select(KeyFilter.Any, serviceLabel);
                         }
 
-                        // Configure the refresh mechanism.
                         options.ConfigureRefresh(refreshOptions =>
                         {
-                            // This key (e.g., "RefreshTrigger") can be updated in App Configuration to trigger a refresh.
                             refreshOptions.Register("RefreshTrigger", refreshAll: true);
                             refreshOptions.SetRefreshInterval(TimeSpan.FromMinutes(1));
                         });
                     });
                 }
-                catch (Exception e)
+                catch (Exception exception)
                 {
-                    Console.WriteLine(e);
+                    Console.WriteLine("Error while adding Azure App Configuration: in service " + serviceLabel + " " +
+                                      exception.Message);
                     throw;
                 }
             }
@@ -73,15 +68,16 @@ namespace ObserviX.Shared.Extensions.Configuration
         }
 
         /// <summary>
-        /// Configures the application to use Azure App Configuration refresh middleware if available.
+        /// Configures the application to use Azure App Configuration refresh middleware if configured.
         /// </summary>
         /// <param name="app">The WebApplication instance.</param>
         /// <returns>The same WebApplication instance for chaining.</returns>
         public static WebApplication UseCustomConfiguration(this WebApplication app)
         {
-            var appConfigEndpoint = "https://app-configuration-dev-observix.azconfig.io";
+            var appConfigConnectionString =
+                Environment.GetEnvironmentVariable("AZURE_APPCONFIGURATION__CONNECTIONSTRING");
 
-            if (!string.IsNullOrWhiteSpace(appConfigEndpoint))
+            if (!string.IsNullOrWhiteSpace(appConfigConnectionString))
             {
                 app.UseAzureAppConfiguration();
             }
