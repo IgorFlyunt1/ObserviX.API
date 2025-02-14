@@ -14,7 +14,7 @@ container:
 
 # Global pipeline variables for environment settings
 variables:
-  - group: AppSettings_Variable_Group
+  - group: Dev_AppSettings_Variable_Group
   - name: AzureAppConfiguration.ConnectionString
     value: '$(AzureAppConfiguration_ConnectionString)'
   - name: AZURE_ENV_NAME
@@ -81,14 +81,27 @@ steps:
       AZURE_LOCATION: $(AZURE_LOCATION)
       ASPNETCORE_ENVIRONMENT: $(ASPNETCORE_ENVIRONMENT)
 
-  # Step 6: Update container environment variables
-  - task: AzureCLI@2
-    inputs:
-      azureSubscription: rg-dev-observix-connection-managed-identity
-      scriptType: bash
-      scriptLocation: inlineScript
-      inlineScript: |
-        az containerapp update \
-          --name observix-gateway \
-          --resource-group rg-dev-observix \
-          --set-env-vars "AzureAppConfiguration__ConnectionString=$(AzureAppConfiguration_ConnectionString)"
+#  # Step 6: Update container environment variables
+#  - task: AzureCLI@2
+#    inputs:
+#      azureSubscription: rg-dev-observix-connection-managed-identity
+#      scriptType: bash
+#      scriptLocation: inlineScript
+#      inlineScript: |
+#        az containerapp update \
+#          --name observix-gateway \
+#          --resource-group rg-dev-observix \
+#          --set-env-vars "AzureAppConfiguration__ConnectionString=$(AzureAppConfiguration_ConnectionString)"
+#        
+#  # Step 7: Update container environment variables
+#  - task: AzureCLI@2
+#    inputs:
+#      azureSubscription: rg-dev-observix-connection-managed-identity
+#      scriptType: bash
+#      scriptLocation: inlineScript
+#      inlineScript: |
+#        az containerapp update \
+#          --name observix-collector \
+#          --resource-group rg-dev-observix \
+#          --set-env-vars "AzureAppConfiguration__ConnectionString=$(AzureAppConfiguration_ConnectionString)"
+#          

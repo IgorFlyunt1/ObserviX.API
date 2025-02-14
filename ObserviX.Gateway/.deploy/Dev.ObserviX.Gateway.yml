@@ -6,6 +6,9 @@ trigger:
 resources:
   - repo: self
 
+variables:
+  AZURE_APPCONFIGURATION__CONNECTIONSTRING: $(APP_CONFIG_CONNECTION_STRING)
+
 stages:
   - stage: Build
     pool:
@@ -56,6 +59,13 @@ stages:
               zipAfterPublish: false
               modifyOutputPath: false
 
+          # This step logs the connection string to the pipeline.
+          # Note: If the variable is secret, its value will be masked (displayed as '***').
+          - script: |
+              echo "Logging Azure App Configuration Connection String:"
+              echo "$(AZURE_APPCONFIGURATION__CONNECTIONSTRING)"
+            displayName: 'Log Connection String'
+
           - task: Docker@2
             displayName: Build and push Docker image
             inputs:
@@ -67,3 +77,5 @@ stages:
               tags: |
                 $(build.buildNumber)
                 latest
+              buildArguments: |
+                AZURE_APPCONFIGURATION__CONNECTIONSTRING=$(AZURE_APPCONFIGURATION__CONNECTIONSTRING)

@@ -1,4 +1,4 @@
-using ObserviX.API.ServiceDefaults;
+// using ObserviX.API.ServiceDefaults;
 using ObserviX.Gateway.Extensions;
 using ObserviX.Shared.Extensions.Configuration;
 using ObserviX.Shared.Extensions.Logging;
@@ -8,7 +8,7 @@ using Serilog;
 var builder = WebApplication.CreateBuilder(args);
 var serviceName = builder.Configuration["SERVICE_NAME"]!;
 builder.AddCustomConfiguration(serviceName);
-builder.AddServiceDefaults();
+// builder.AddServiceDefaults();
 builder.AddLoggingAndTelemetry(builder.Configuration);
 // builder.Services.AddConfiguredReverseProxy(builder.Configuration, builder.Environment);
 // builder.Services.AddAuthorization();
@@ -28,10 +28,11 @@ if (!app.Environment.IsDevelopment() || !app.Environment.IsEnvironment("Local"))
 {
     app.UseHsts();
 }
+
 // app.UseCors("ConfiguredCors");
 // app.UseMiddleware<TenantExtractionMiddleware>();
 app.UseCustomConfiguration();
-app.MapDefaultEndpoints();
+// app.MapDefaultEndpoints();
 app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
 // app.MapReverseProxy();
@@ -39,21 +40,25 @@ app.UseHttpsRedirection();
 // app.UseAuthorization();
 
 
-var azureAppConfigConnectionFromEnvironment = Environment.GetEnvironmentVariable("AzureAppConfiguration__ConnectionString");
+var azureAppConfigConnectionFromEnvironment =
+    Environment.GetEnvironmentVariable("AzureAppConfiguration__ConnectionString");
 
-var testValue = builder.Configuration.GetValue<string>("testkey");
-var testValueFromEnv = Environment.GetEnvironmentVariable("testkey");
 
 app.MapGet("/config", () =>
     {
+        var connectionString = Environment.GetEnvironmentVariable("AZURE_APPCONFIGURATION__CONNECTIONSTRING") ?? "Not Found";
+        var endpoint = Environment.GetEnvironmentVariable("AZURE_APPCONFIGURATION_ENDPOINT") ?? "Not Found";
+        var serviceBus = Environment.GetEnvironmentVariable("ServiceBus_ConnectionString") ?? "Not Found";
+        var serviceBusFromConfig = builder.Configuration["ServiceBus_ConnectionString"] ?? "Not Found";
+        var betterStack = builder.Configuration["BetterStack:SourceToken"] ?? "Not Found";
+
         var result = new
         {
-            // Azure App Config connection tested in various ways:
-            azureAppConfigConnectionFromEnvironment = azureAppConfigConnectionFromEnvironment ?? "Not Found",
-
-            // Test value retrieved in two ways:
-            testValue = testValue ?? "Not Found",
-            testValueFromEnv = testValueFromEnv ?? "Not Found"
+            AzureAppConfigurationConnectionString = connectionString,
+            AzureAppConfigurationEndpoint = endpoint,
+            ServiceBusConnectionString = serviceBus,
+            ServiceBusConnectionStringFromConfig = serviceBusFromConfig,
+            BetterStackSourceToken = betterStack,
         };
 
         return Results.Json(result);
@@ -61,23 +66,19 @@ app.MapGet("/config", () =>
     .WithName("config")
     .WithOpenApi();
 
-
-
-
 app.MapGet("/gateway-test", () =>
-{
-    if (app.Environment.IsEnvironment("Local"))
     {
-        return $"Hello World! \nGateway - AppSettings proxy config: \n{builder.Configuration.GetSection("ReverseProxy").Value}";
-    }
-    else
-    {
+        if (app.Environment.IsEnvironment("Local"))
+        {
+            return
+                $"Hello World! \nGateway - AppSettings proxy config: \n{builder.Configuration.GetSection("ReverseProxy").Value}";
+        }
+
         var azureConfig = builder.Configuration.GetValue<string>("AzureAppConfigurationReverseProxyConfig");
         return $"Hello World! \nAzure App Configuration proxy config: \n{azureConfig}";
-    }
-})
-.WithName("test")
-.WithOpenApi()
-.RequireAuthorization();
+    })
+    .WithName("test")
+    .WithOpenApi()
+    .RequireAuthorization();
 
 await app.RunAsync();
