@@ -73,7 +73,7 @@ stages:
               repository: 'observix-api/observix-gateway-dev-observix'
               command: 'buildAndPush'
               Dockerfile: 'ObserviX.Gateway/Dockerfile'
-              buildContext: 'ObserviX.Gateway'
+              buildContext: '.'
               tags: |
                 $(build.buildNumber)
                 latest

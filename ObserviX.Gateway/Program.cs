@@ -7,7 +7,7 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 var serviceName = builder.Configuration["SERVICE_NAME"]!;
-builder.AddCustomConfiguration(serviceName);
+// builder.AddCustomConfiguration(serviceName);
 // builder.AddServiceDefaults();
 builder.AddLoggingAndTelemetry(builder.Configuration);
 // builder.Services.AddConfiguredReverseProxy(builder.Configuration, builder.Environment);
@@ -31,7 +31,7 @@ if (!app.Environment.IsDevelopment() || !app.Environment.IsEnvironment("Local"))
 
 // app.UseCors("ConfiguredCors");
 // app.UseMiddleware<TenantExtractionMiddleware>();
-app.UseCustomConfiguration();
+// app.UseCustomConfiguration();
 // app.MapDefaultEndpoints();
 app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
@@ -47,6 +47,8 @@ var azureAppConfigConnectionFromEnvironment =
 app.MapGet("/config", () =>
     {
         var connectionString = Environment.GetEnvironmentVariable("AZURE_APPCONFIGURATION__CONNECTIONSTRING") ?? "Not Found";
+        var connectionStringFromConfig = builder.Configuration["AzureAppConfiguration:ConnectionString"] ?? "Not Found";
+        var connectionStringFromConfig1 = builder.Configuration["AZURE_APPCONFIGURATION__CONNECTIONSTRING"] ?? "Not Found";
         var endpoint = Environment.GetEnvironmentVariable("AZURE_APPCONFIGURATION_ENDPOINT") ?? "Not Found";
         var serviceBus = Environment.GetEnvironmentVariable("ServiceBus_ConnectionString") ?? "Not Found";
         var serviceBusFromConfig = builder.Configuration["ServiceBus_ConnectionString"] ?? "Not Found";
@@ -55,6 +57,8 @@ app.MapGet("/config", () =>
         var result = new
         {
             AzureAppConfigurationConnectionString = connectionString,
+            connectionStringFromConfig = connectionStringFromConfig,
+            connectionStringFromConfig1 = connectionStringFromConfig,
             AzureAppConfigurationEndpoint = endpoint,
             ServiceBusConnectionString = serviceBus,
             ServiceBusConnectionStringFromConfig = serviceBusFromConfig,

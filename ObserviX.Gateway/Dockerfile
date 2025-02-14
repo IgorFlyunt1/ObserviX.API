@@ -1,19 +1,24 @@
+# Stage 1: Build
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 
 WORKDIR /src
 
-COPY ["ObserviX.Gateway.csproj", "./"]
-COPY ["ObserviX.Shared/ObserviX.Shared.csproj", "../ObserviX.Shared"]
-RUN dotnet restore "ObserviX.Gateway.csproj"
 COPY . .
 
+WORKDIR /src/ObserviX.Gateway
+
+# Restore and build the Gateway project (the project reference will now resolve correctly).
+RUN dotnet restore "ObserviX.Gateway.csproj"
 RUN dotnet build "ObserviX.Gateway.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
+# Stage 2: Publish
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
+WORKDIR /src/ObserviX.Gateway
 RUN dotnet publish "ObserviX.Gateway.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
+# Stage 3: Final Runtime Image
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
 WORKDIR /app
 
@@ -22,6 +27,8 @@ ENV AZURE_APPCONFIGURATION__CONNECTIONSTRING=${AZURE_APPCONFIGURATION__CONNECTIO
 RUN echo "AZURE_APPCONFIGURATION__CONNECTIONSTRING: $AZURE_APPCONFIGURATION__CONNECTIONSTRING"
 
 COPY --from=publish /app/publish .
+
 EXPOSE 8080
 EXPOSE 8081
+
 ENTRYPOINT ["dotnet", "ObserviX.Gateway.dll"]
